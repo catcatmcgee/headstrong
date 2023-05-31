@@ -22,6 +22,10 @@ const Nav = () => {
             <Link to='/memory'>Memory</Link>
           </Button>
 
+          <Button className='Button'>
+            <Link to='/relaxing-game'>Mindfulness Game</Link>
+          </Button>
+
           <Button
             className='Button'
             onClick={() =>

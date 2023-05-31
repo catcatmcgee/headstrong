@@ -5,6 +5,7 @@ import Quote from './Quote.jsx';
 import Countdown from './Countdown.jsx';
 import Nav from './Nav.jsx';
 import Footer from './Footer.jsx';
+import Ghost from './Ghost.jsx';
 import axios from 'axios';
 import GoogleButton from 'react-google-button';
 import { Routes, Route, Link } from 'react-router-dom';
@@ -71,6 +72,10 @@ const App = () => {
         <Route
           path='/countdown'
           element={<Countdown />}
+        />
+        <Route
+          path='/relaxing-game'
+          element={<Ghost />}
         />
       </Routes>
 
