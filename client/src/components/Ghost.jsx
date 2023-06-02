@@ -6,23 +6,41 @@ const Ghost = () => {
 
   const [userMove, setUserMove] = useState('');
   const [game, setGame] = useState('');
+  const [status, setStatus] = useState('');
 
   const handleChange = (e) => {
     const input = (e.target.value);
     setUserMove(input.slice(-1));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    axios.post('/api/ghost', {userMove})
-      .then(({data}) => {
-        setUserMove('');
-        setGame(game + data);
-      })
-      .catch((err) => console.warn(err));
+    try {
+      const { data } = await axios.post('/api/ghost', {game: game + userMove});
+      if(data === 'odd'){
+        setGame(game + userMove);
+        setStatus('complete');
+      } else if (data === 'even') {
+        setGame(game + userMove + `\nwowwwww I didn't know we allowed cheaters to play. Okay cheater, next game.`)
+        setStatus('cheated');
+      } else if (data === '') {
+        setGame(game + userMove);
+        setStatus('invalid')
+      } else {
+      setGame(game + userMove + data);
+      }
+      setUserMove('');
+    } catch(err) {
+      console.warn(err);
+    }
   };
 
-
+  const handleReset = () => {
+    setUserMove('')
+    setGame('')
+    setStatus('')
+  }
+  
   return (
     <div className="text wrap">
       <form>
@@ -38,6 +56,16 @@ const Ghost = () => {
         </div>
         <button className="urlButton" onClick={handleSubmit}>Submit</button>
         <h2 className="game">Current Game: {game}</h2>
+        {status === 'complete' ? (
+          <h1>YOU IDIOT, YOU FINISHED A WORD</h1>
+        ) : status === 'cheated' ? (
+          <h1>YOU'RE A CHEARER</h1>
+        ) : status === 'invalid' ? (
+          <h1>THATS NOT A WORD, STUPID</h1>
+        ) : null }
+        {status.length ? (
+          <button className="urlButton" onClick={handleReset}>Try Again</button>
+        ) : null}
       </form>
     </div>
   );
