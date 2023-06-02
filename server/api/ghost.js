@@ -2,7 +2,7 @@ const { Router } = require('express');
 const Ghost = Router();
 const { getNextMove } = require('../helpers/ghost');
 const fs = require('fs');
-const wordTree = JSON.parse(fs.readFileSync('../../wordtree.json', 'utf8'));
+const wordTree = JSON.parse(fs.readFileSync('wordtree.json', 'utf8'));
 const winningTree = JSON.parse(fs.readFileSync('winningtree.json', 'utf8'))
 
 Ghost.post('/', async (req, res) => {
