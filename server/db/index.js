@@ -24,29 +24,38 @@ const Countdown = sequelize.define('countdowns', {
   username: {
     type: Sequelize.STRING,
   },
-  eventName: {
+  event: {
     type: Sequelize.STRING,
   },
   date: {
-    type: Sequelize.DATE,
+    type: Sequelize.STRING,
+  },
+  task: {
+    type: Sequelize.STRING,
+  },
+  stressors: {
+    type: Sequelize.STRING,
   },
   story: {
-    type: Sequelize.STRING,
+    type: Sequelize.TEXT('long'),
   }
 });
-Countdown.sync();
+Countdown.sync({alter: true});
 
-const addCountdown = async(body, user) => {
-  const { event, date, story } = body;
-
-  const newCountdown = await Countdown.create({
-    username: user,
-    eventName: event,
-    date,
-    story
-  });
-
-  return newCountdown.save();
+const addCountdown = async(username, event, date, task, stressors, story) => {
+  try {
+    const newCountdown = await Countdown.create({
+      username,
+      event,
+      date,
+      task,
+      stressors,
+      story
+    });
+    return newCountdown.save();
+  } catch (err) {
+    console.error('Failed to SAVE countdown to db:', err);
+  }
 };
 
 
@@ -153,5 +162,6 @@ module.exports = {
   deleteJournal,
   updateJournal,
   Entries,
-  Countdown
+  addCountdown,
+  Countdown,
 };

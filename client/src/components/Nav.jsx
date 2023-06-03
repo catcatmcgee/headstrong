@@ -25,7 +25,13 @@ const Nav = () => {
           <Button className='Button'>
             <Link to='/relaxing-game'>Game</Link>
           </Button>
+          <Button className='Button'>
+            <Link to='/antiasmr'>Anti-Asmr</Link>
+          </Button>
 
+          <Button className='Button'>
+            <Link to='/countdown'>Anti-Visualization</Link>
+          </Button>
           <Button
             className='Button'
             onClick={() =>

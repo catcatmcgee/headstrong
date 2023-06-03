@@ -4,7 +4,8 @@ import axios from 'axios';
 import Slider from '@mui/material/Slider';
 import SentimentSatisfiedAltIcon from '@mui/icons-material/SentimentSatisfiedAlt';
 import SentimentVeryDissatisfiedIcon from '@mui/icons-material/SentimentVeryDissatisfied';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import createTheme from '@mui/material/styles/createTheme';
+import ThemeProvider from '@mui/material/styles/ThemeProvider';
 import Grid from '@mui/material/Grid';
 
 
