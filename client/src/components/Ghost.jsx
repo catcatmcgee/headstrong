@@ -14,7 +14,6 @@ const Ghost = () => {
   const handleSubmit = async (e) => {
     if(e) e.preventDefault();
     try {
-      console.log('userMove', userMove)
       const { data } = await axios.post('/api/ghost', {game: (game + userMove).toLowerCase()});
       if (data.end === 'odd') {
         setGame(game + userMove);
@@ -36,7 +35,17 @@ const Ghost = () => {
     } catch(err) {
       console.warn(err);
     }
+  };
 
+  const handleChallenge = async (e) => {
+    if(e) e.preventDefault();
+    try {
+      const data  = await axios.get(`/api/ghost`, { params: { game } });
+      console.log(data)
+      //handle data
+    } catch(err) {
+      console.warn(err);
+    }
   };
 
   const startRound = () => {
@@ -80,26 +89,26 @@ const Ghost = () => {
   //         <p>The rules are simple.</p>
   //         <br />
   //         <p>
-            // You have five lives, one for each letter of the word "GHOST".
-            // The objective of the game is to be the last player to have lives
-            // remaining.
+  //           You have five lives, one for each letter of the word "GHOST".
+  //           The objective of the game is to be the last player to have lives
+  //           remaining.
 
-            // Each player takes turns adding a letter to an ever-growing word
-            // fragment. Try not to spell a word (of length 4 letters or more).
-            // Try to force another player to spell a word, or else try to get a
-            // player to say a letter that makes it impossible to form a word.
+  //           Each player takes turns adding a letter to an ever-growing word
+  //           fragment. Try not to spell a word (of length 4 letters or more).
+  //           Try to force another player to spell a word, or else try to get a
+  //           player to say a letter that makes it impossible to form a word.
 
-            // To start, say any letter of
-            // the alphabet. Each player then takes turns adding a single letter to
-            // the word fragment. Instead of adding a letter, a player can “challenge” the
-            // last player who added a letter, if they thinks a word does not exist
-            // that starts with the current fragment. If a challenge occurs, the last player
-            // must try to say a word that begins with the fragment. If the player
-            // who was challenged is able to spell a word, the challenger loses a life.
-            // If the player who was challenged cannot spell a word, the challenger
-            // earns a life. If a player accidentally spells a word, they
-            // also loses a life. The round ends and a new round is begun up until a player
-            // loses all of their lives, at which point they die and the other player wins.
+  //           To start, say any letter of
+  //           the alphabet. Each player then takes turns adding a single letter to
+  //           the word fragment. Instead of adding a letter, a player can “challenge” the
+  //           last player who added a letter, if they thinks a word does not exist
+  //           that starts with the current fragment. If a challenge occurs, the last player
+  //           must try to say a word that begins with the fragment. If the player
+  //           who was challenged is able to spell a word, the challenger loses a life.
+  //           If the player who was challenged cannot spell a word, the challenger
+  //           earns a life. If a player accidentally spells a word, they
+  //           also loses a life. The round ends and a new round is begun up until a player
+  //           loses all of their lives, at which point they die and the other player wins.
   //         </p>
   //         <button className="urlButton" onClick={findMatch}>Find A Match</button>
   //       </div>
@@ -146,7 +155,8 @@ const Ghost = () => {
           <div>
             <h2>Current Game: {game.toUpperCase()}</h2>
             <div className="game-input">{userMove.toUpperCase()}</div>
-            <button className="urlButton" onClick={handleSubmit}>Submit</button>
+            <button className="urlButton game-button" onClick={handleSubmit}>Submit</button>
+            <button className="urlButton challenge-button" onClick={handleChallenge}>Challenge</button>
           </div>
         ) : status === 'complete' ? (
           <div>
