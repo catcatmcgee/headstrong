@@ -15,7 +15,6 @@ const getCurrentNode = (word, node) => {
   } else if (typeof node.end === 'string') {
     return node.end;
   }
-
   let child = node[word.charAt(0)];
   if (child) {
     return getCurrentNode(word.substring(1), child);
@@ -23,16 +22,32 @@ const getCurrentNode = (word, node) => {
   return null;
 }
 
+const getWordFromFragment = (wordFragment, currentNode, tree) => {
+  if(!currentNode){
+    currentNode = getCurrentNode(wordFragment, tree)
+  }
+  if(!currentNode){
+    return null
+  }
+  if (typeof currentNode.end === 'string') {
+    return wordFragment;
+  }
+  const childKey = Object.keys(currentNode)[Math.floor(Math.random() * Object.keys(currentNode).length)];
+  if (childKey) {
+    wordFragment += childKey;
+    return getWordFromFragment(wordFragment, currentNode[childKey]);
+  }
+  return null;
+}
+
 function getNextMove(game, winningTree, wordTree) {
   const currentNode = getCurrentNode(game, winningTree) || getCurrentNode(game, wordTree) || null;
-  console.log('currentNode', currentNode);
   if (currentNode) {
     if (currentNode.end === 'odd') {
       return {end :'odd'}
     }
     const keys = Object.keys(currentNode);
     const validKeys = keys.filter((key) => currentNode[key].end !== 'even');
-    console.log('keys, validKeys', keys, validKeys)
     if(!validKeys.length){
       const nextMove = keys[Math.floor(Math.random() * keys.length)];
       return {letter: nextMove, end: 'even'};
@@ -68,24 +83,26 @@ const makeWordTree = (wordArray) => {
   return root;
 };
 
+// //FUNCTIONS TO MAKE WORD TREES
+// const writeWordTreeFile = (filePath) => {
+//   const wordTree = makeWordTree(wordArray);
+//   fs.writeFileSync(filePath, JSON.stringify(wordTree, null, 2));
+//   console.log(`wrote word Tree to ${filePath}`)
+// }
+// //writeWordTreeFile('wordtree.json');
 
-const writeWordTreeFile = (filePath) => {
-  const wordTree = makeWordTree(wordArray);
-  fs.writeFileSync(filePath, JSON.stringify(wordTree, null, 2));
-  console.log(`wrote word Tree to ${filePath}`)
-}
-//writeWordTreeFile('wordtree.json');
-
-const writeSolutionsFile = (filePath) => {
-  const solutions = pruneTree(wordTree);
-  ;
-  fs.writeFileSync(filePath, JSON.stringify(solutions, null, 2));
-}
-// writeSolutionsFile('ghostSolutions.json');
+// const writeSolutionsFile = (filePath) => {
+//   const solutions = pruneTree(wordTree);
+//   ;
+//   fs.writeFileSync(filePath, JSON.stringify(solutions, null, 2));
+// }
+// // writeSolutionsFile('ghostSolutions.json');
 
 
 ////////////////////////////////////////////////////////
 
 module.exports = {
-  getNextMove
+  getNextMove,
+  getCurrentNode,
+  getWordFromFragment
 }
