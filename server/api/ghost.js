@@ -1,9 +1,11 @@
 const { Router } = require('express');
-const Ghost = Router();
-const { getNextMove } = require('../helpers/ghost');
+const { getNextMove, getCurrentNode } = require('../helpers/ghost');
+const { getChallengeResults } = require('../helpers/webster');
 const fs = require('fs');
 const wordTree = JSON.parse(fs.readFileSync('wordtree.json', 'utf8'));
 const winningTree = JSON.parse(fs.readFileSync('winningtree.json', 'utf8'))
+
+const Ghost = Router();
 
 Ghost.post('/', async (req, res) => {
   const { game }  = req.body;
@@ -17,6 +19,19 @@ Ghost.post('/', async (req, res) => {
   }
 });
 
+Ghost.get('/', async(req, res) => {
+  const word  = req.query.game;
+  getCurrentNode(word, wordTree)
+  console.log(word);
+
+  // try {
+  //   const challengeResults = getChallengeResults(word);
+  //   console.log('challenge Results inside ghost router', challengeResults)
+  //   res.status(200).send(challengeResults);
+  // } catch (err) {
+  //   console.log('Failed Challenge Lookup', err);
+  // }
+})
 
 module.exports = {
   Ghost,
