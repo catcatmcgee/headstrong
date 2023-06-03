@@ -27,7 +27,7 @@ const ChatSidebar = () => {
       </div>
       <form onSubmit={handleSubmit}>
         <textarea
-          class="form-control"
+          className="form-control"
           value={newMessage}
           onChange={handleInputChange}
           placeholder="Type your message..."
