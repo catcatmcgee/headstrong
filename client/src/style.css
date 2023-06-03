@@ -164,3 +164,101 @@
 	font-family: Arial;
 	font-size: 0.6rem;
 }
+
+/* GAME STUFF */
+.gamepage {
+  background-color: rgba(0, 0, 0, 0.5);
+  padding: 7%;
+  padding-top: 3%;
+  display: flex;
+  height: 90vh;
+  width: 100vw;
+  top: 100px;
+  position: absolute;
+  justify-content: space-between;
+}
+.game {
+  flex-grow: 1;
+  padding: 20px;
+  margin-right: 10%;
+}
+.game-input {
+	width: 56px;
+	height: 56px;
+	border-radius: 4px;
+  border-color: #263d4a;
+  border-style: solid;
+	background-color: rgba(255, 255, 255, 0.3);
+	transition: 0.3s all;
+	backdrop-filter: blur(2px);
+  color: white;
+  font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  font-size: 56px;
+  text-align: center;
+}
+
+/* CHAT STUFF */
+.chat-sidebar {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background-color: #fefefe2d;
+  padding: 20px;
+  width: 800px;
+  margin: 20px;
+  border-radius: 20px;
+}
+
+.messages {
+  flex-grow: 1;
+  overflow-y: scroll;
+  margin-bottom: 10px;
+}
+
+.message {
+  background-color: #fff;
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 10px;
+}
+
+.message-form {
+  display: flex;
+}
+
+.message-input {
+  flex-grow: 1;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-right: 10px;
+}
+
+.send-button {
+  padding: 10px 20px;
+  background-color: #4caf50;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.send-button:hover {
+  background-color: #45a049;
+}
+
+/* Hide scrollbar on messages container */
+.messages::-webkit-scrollbar {
+  display: none;
+}
+
+/* Optional: Style scrollbar track */
+.messages::-webkit-scrollbar-track {
+  background-color: #f2f2f2;
+}
+
+/* Optional: Style scrollbar thumb */
+.messages::-webkit-scrollbar-thumb {
+  background-color: #888;
+  border-radius: 5px;
+}
