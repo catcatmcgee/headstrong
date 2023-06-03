@@ -63,6 +63,11 @@ const Ghost = () => {
     };
   }, [userMove]);
 
+  const findMatch = () => {
+    setStatus('pairing');
+    setTimeout(()=> {setStatus('user turn')}, Math.floor(Math.random()*5000));
+  }
+
   if(status==='pregame'){
     return (
       <div className="gamepage">
@@ -76,9 +81,20 @@ const Ghost = () => {
           one for each letter of the word "GHOST." You play a letter, then I play
           a letter. If the letter you play completes a word with four or more
           letters, you loose a life. If you think I've played a word that can't
-          possibly lead to a word, you can challenge me and if you're right, I'll
-          lose a life. Here, I'll even let you go first.
+          possibly lead to a word, you can challenge me. If you were right and there is no word,
+          I lose a life, but if I can think of a word it leads to, you loose a life.
           </p>
+          <button className="urlButton" onClick={findMatch}>Find A Match</button>
+        </div>
+      </div>
+    )
+  }
+
+  if(status==='pairing'){
+    return (
+      <div className="gamepage">
+        <div className="text wrap">
+          <h1 className="title">Finding opponent...</h1>
         </div>
       </div>
     )
