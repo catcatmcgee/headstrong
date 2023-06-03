@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import ChatSidebar from './ChatSidebar.jsx'
 
 const Ghost = () => {
 
@@ -62,13 +63,32 @@ const Ghost = () => {
     };
   }, [userMove]);
 
+  if(status==='pregame'){
+    return (
+      <div className="gamepage">
+        <div className="text wrap">
+          <h1 className="title">Play a game of ghost?</h1>
+          <br />
+          <p>The rules are simple.</p>
+          <br />
+          <p>
+          We each have five lives,
+          one for each letter of the word "GHOST." You play a letter, then I play
+          a letter. If the letter you play completes a word with four or more
+          letters, you loose a life. If you think I've played a word that can't
+          possibly lead to a word, you can challenge me and if you're right, I'll
+          lose a life. Here, I'll even let you go first.
+          </p>
+        </div>
+      </div>
+    )
+  }
   
   return (
-    <div className="text game">
-      <form>
-        <h2 className="title">Play a game of ghost?</h2>
+    <div className="gamepage">  
+      <form className="text game">
         <br />
-        <div className="rules">The rules are simple. We each have five lives, one for each letter of the word "GHOST." You play a letter, then I play a letter. If the letter you play completes a word with four or more letters, you loose a life. If the letter you play can't lead to any possible words, you loose a life. If you think I've played a word that can't possibly lead to a word, you can challenge me and if you're right, I'll lose a life. To make it fair, I'll tell you that we're using Meriam Webster's college dictionary as a word source. Here, I'll even let you go first.</div>
+        
         <br />
         {status === '' ? (
           <div>
@@ -90,6 +110,7 @@ const Ghost = () => {
           <button className="urlButton" onClick={handleReset}>Try Again</button>
         ) : null}
       </form>
+      <ChatSidebar className="sidebar"/>
     </div>
   );
 };
