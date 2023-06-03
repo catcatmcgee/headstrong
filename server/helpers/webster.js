@@ -9,7 +9,8 @@ const okayPartsOfSpeech = [
   "preposition",
   "conjunction",
   "interjection",
-  "pronoun"
+  "pronoun",
+  "adverb or adjective"
 ]
 
 const processDefinition = (definition, word) => {
@@ -21,14 +22,14 @@ const processDefinition = (definition, word) => {
     return {invalid: definition.fl}
   //return the word
   } else {
-    return definition.shortdef[0]
+    return {[word]: definition.shortdef[0]}
   }
 }
 
 const getChallengeResults = async (word) => {
   try {
     const {data} = await axios.get(`https://www.dictionaryapi.com/api/v3/references/collegiate/json/${word}?key=${WEBSTER_TOKEN}`);
-    console.log('first definition, word', data[0], word)
+    console.log('first definition, word', data[0], 'word', word)
     const lookupResults = processDefinition(data[0], word);
     console.log('wordLookupResults', lookupResults)
     return lookupResults;
