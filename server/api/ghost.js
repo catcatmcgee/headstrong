@@ -1,5 +1,5 @@
 const { Router } = require('express');
-const { getNextMove, getCurrentNode } = require('../helpers/ghost');
+const { getNextMove, getCurrentNode, getWordFromFragment } = require('../helpers/ghost');
 const { getChallengeResults } = require('../helpers/webster');
 const fs = require('fs');
 const wordTree = JSON.parse(fs.readFileSync('wordtree.json', 'utf8'));
@@ -21,16 +21,21 @@ Ghost.post('/', async (req, res) => {
 
 Ghost.get('/', async(req, res) => {
   const word  = req.query.game;
-  getCurrentNode(word, wordTree)
-  console.log(word);
-
-  // try {
-  //   const challengeResults = getChallengeResults(word);
-  //   console.log('challenge Results inside ghost router', challengeResults)
-  //   res.status(200).send(challengeResults);
-  // } catch (err) {
-  //   console.log('Failed Challenge Lookup', err);
-  // }
+  const currentNode = getCurrentNode(word, wordTree);
+  if(!currentNode){
+    res.status(200).send(null);
+  }
+  const wholeWord = getWordFromFragment(word, currentNode, wordTree)
+  if(!wholeWord){
+    res.status(200).send(null);
+  }
+  try {
+    const challengeResults = await getChallengeResults(wholeWord);
+    console.log('challenge Results inside ghost router', challengeResults)
+    res.status(200).send(challengeResults);
+  } catch (err) {
+    console.log('Failed Challenge Lookup', err);
+  }
 })
 
 module.exports = {
