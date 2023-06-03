@@ -23,7 +23,7 @@ const Nav = () => {
           </Button>
 
           <Button className='Button'>
-            <Link to='/relaxing-game'>Mindfulness Game</Link>
+            <Link to='/relaxing-game'>Game</Link>
           </Button>
 
           <Button
