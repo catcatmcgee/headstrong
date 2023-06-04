@@ -58,6 +58,88 @@ const addCountdown = async(username, event, date, task, stressors, story) => {
   }
 };
 
+const Message = sequelize.define('messages', {
+  id: {
+    type: Sequelize.INTEGER,
+    autoIncrement: true,
+    allowNull: false,
+    primaryKey: true
+  },
+  username: {
+    type: Sequelize.STRING,
+  },
+  date: {
+    type: Sequelize.STRING,
+  },
+  text: {
+    type: Sequelize.STRING,
+  }
+});
+Countdown.sync({alter: true});
+
+const addMessage = async(username, date, text) => {
+  Message.create({
+    username,
+    date,
+    text
+  })
+  .then(() => {
+    console.log('Message saved');
+  })
+  .catch((error) => {
+    console.error('Unable to save Message:', error);
+  })
+};
+
+const getAllMessages = (user) => {
+  return Message.findAll();
+};
+
+const deleteMessage = (body) => {
+  const { id } = body;
+  Message.destroy({
+    where: {
+      id: id
+    }
+  })
+  .then(() => {
+    console.log('Message has been deleted');
+  })
+  .catch((error) => {
+    console.error('Unable to delete Message:', error);
+  });
+};
+
+const deleteAllMessages = () => {
+  Message.destroy({
+    where: {},
+    truncate: true
+  })
+  .then(() => {
+    console.log('All entries have been deleted');
+  })
+  .catch((error) => {
+    console.error('Unable to delete all Messages:', error);
+  });
+};
+
+const editMessage = (body) => {
+  const { id, text } = body;
+  Message.update({
+    text: text
+  },
+  {
+    where: {
+      id: id
+    }
+  })
+  .then(() => {
+    console.log('Message updated');
+  })
+  .catch((error) => {
+    console.error('Unable to update Message:', error);
+  });
+};
 
 const Entries = sequelize.define('entries', {
   id: {
@@ -164,4 +246,9 @@ module.exports = {
   Entries,
   addCountdown,
   Countdown,
+  addMessage,
+  getAllMessages,
+  deleteMessage,
+  deleteAllMessages,
+  editMessage
 };
