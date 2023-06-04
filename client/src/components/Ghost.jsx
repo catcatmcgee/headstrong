@@ -13,10 +13,14 @@ const Ghost = () => {
   const [opponentLives, setOpponentLives] = useState('GHOST');
   const [definition, setDefinition] = useState('');
   const [disableSubmit, setDisableSubmit] = useState(false);
+  const [chatFocused, setChatFocused] = useState(false);
 
   /* * * * * * * * * * * HANDLING KEY STROKES * * * * * * * * * * * * */
   useEffect(() => {
     const handleKeyDown = (event) => {
+      if(chatFocused){
+        return;
+      }
       if (event.key.match(/^[a-z]$/i)) {
         if(turnStatus === 'opponent challenged'){
           setChallengeInput(challengeInput + event.key)
@@ -44,7 +48,7 @@ const Ghost = () => {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [moveInput, turnStatus, challengeInput]);
+  }, [moveInput, turnStatus, challengeInput, chatFocused]);
 
   useEffect(()=>{
     console.log(turnStatus);
@@ -253,7 +257,7 @@ const Ghost = () => {
           )}
         </div>
       </form>
-      <ChatSidebar className="sidebar"/>
+      <ChatSidebar className="sidebar" setChatFocused={setChatFocused}/>
     </div>
   );
 };

@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
-const ChatSidebar = () => {
+const ChatSidebar = ({setChatFocused}) => {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
+
 
   const handleInputChange = (e) => {
     setNewMessage(e.target.value);
@@ -21,7 +22,13 @@ const ChatSidebar = () => {
       <div className="messages">
         {messages.map((message, index) => (
           <div key={index} className="message">
-            {message}
+            <p>{message}</p>
+            {message.author === 'user' ? (
+            <div>
+              <button>🖊️</button>
+              <button>🗑</button>
+            </div>
+            ) : null}
           </div>
         ))}
       </div>
@@ -29,6 +36,8 @@ const ChatSidebar = () => {
         <textarea
           className="form-control"
           value={newMessage}
+          onFocus={()=>setChatFocused(true)}
+          onBlur={() => setChatFocused(false)}
           onChange={handleInputChange}
           placeholder="Type your message..."
         />
