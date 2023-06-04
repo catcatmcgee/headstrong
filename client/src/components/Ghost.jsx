@@ -18,13 +18,13 @@ const Ghost = () => {
   useEffect(() => {
     const handleKeyDown = (event) => {
       if (event.key.match(/^[a-z]$/i)) {
-        if(turnStatus === 'user challenged'){
+        if(turnStatus === 'opponent challenged'){
           setChallengeInput(challengeInput + event.key)
         } else {
           setMoveInput(event.key);
         }
       } else if (event.key === 'Backspace') {
-        if(turnStatus === 'user challenged'){
+        if(turnStatus === 'opponent challenged'){
           setChallengeInput(challengeInput.slice(0, -1))
         } else {
           setMoveInput('');
@@ -32,7 +32,7 @@ const Ghost = () => {
       } else if (event.key === 'Enter') {
         if(turnStatus==='user turn'){
           handleSubmit(event);
-        } else if (turnStatus === 'user challenged'){
+        } else if (turnStatus === 'opponent challenged'){
           handleChallengeSubmit();
         } else {
           startRound(event);
@@ -44,7 +44,7 @@ const Ghost = () => {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [moveInput, turnStatus]);
+  }, [moveInput, turnStatus, challengeInput]);
 
   useEffect(()=>{
     console.log(turnStatus);
@@ -60,10 +60,8 @@ const Ghost = () => {
       const { data } = await axios.post('/api/ghost', {game: (game + moveInput).toLowerCase()});
       if (data.end === 'odd') {
         setGame(game + moveInput);
-        setTimeout(() => {
           setTurnStatus('complete');
           setUserLives(userLives.slice(0,-1))
-        }, 1000)
       } else if (data.end === 'even') {
         setGame(game + moveInput + data.letter);
         setTimeout(() => {
@@ -208,11 +206,21 @@ const Ghost = () => {
         <ScoreTracker userLives={userLives} opponentLives={opponentLives} />
         <br />
         <div className="round">
-          <h2>Current Game</h2>
-          <h2 className='logo'>{game.toUpperCase()}</h2>
+          <h2>ROUND #</h2>
+          <br></br>
+          <div className="round-word-fragment">
+            {game.split('').map((char, i) => <span key={i} className="game-input">{char.toUpperCase()}</span>)}
+            {turnStatus === 'user turn' ? (
+            <div className="game-input user-input">{moveInput.toUpperCase()}</div>
+            ) : turnStatus === 'opponent challenged' ? (
+              <div>
+                {challengeInput.split('').map((char, i) => <span key={i} className="game-input user-input">{char.toUpperCase()}</span>)}
+              </div>
+            ) : null}
+          </div>
+          <br />
           {turnStatus === 'user turn' ? (
             <div>
-              <div className="game-input">{moveInput.toUpperCase()}</div>
               <button className="urlButton game-button" onClick={handleSubmit}>Submit</button>
               <button className="urlButton challenge-button" onClick={handleUserChallenge}>Challenge</button>
             </div>
@@ -234,7 +242,6 @@ const Ghost = () => {
               <Timer turnStatus={turnStatus} setTurnStatus={setTurnStatus}/>
               <h1>YOUR OPPONENT HAS CHALLENGED YOU</h1>
               <h3>YOU HAVE 10 SECONDS TO ENTER A VALID WORD</h3>
-              <div className="challenge-input">{game.toUpperCase()}{challengeInput.toUpperCase()}</div>
               <button className="urlButton" onClick={()=>handleChallengeSubmit}>Submit</button>
             </div>
           ) : (
