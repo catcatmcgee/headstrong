@@ -15518,6 +15518,7 @@ grizzled
 grizzly
 groan
 groat
+groats
 grocer
 groceries
 grocery
