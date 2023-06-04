@@ -15,7 +15,7 @@ const okayPartsOfSpeech = [
 
 const processDefinition = (definition, word) => {
   //no definition
-  if (!definition || !definition.shortdef || definition.meta.id.split(':')[0] !== word){
+  if (!definition || !definition.shortdef || !definition.meta.stems.includes(word)){
     return {invalid: 'no such word'}
   //make sure the word is viable
   } else if (!(okayPartsOfSpeech.includes(definition.fl))) {
@@ -29,7 +29,7 @@ const processDefinition = (definition, word) => {
 const getChallengeResults = async (word) => {
   try {
     const {data} = await axios.get(`https://www.dictionaryapi.com/api/v3/references/collegiate/json/${word}?key=${WEBSTER_TOKEN}`);
-    console.log('first definition, word', data[0], 'word', word)
+    console.log('first definition', data[0], 'word', word)
     const lookupResults = processDefinition(data[0], word);
     console.log('wordLookupResults', lookupResults)
     return lookupResults;
