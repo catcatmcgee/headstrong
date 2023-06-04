@@ -15,7 +15,7 @@ const okayPartsOfSpeech = [
 
 const processDefinition = (definition, word) => {
   //no definition
-  if (!definition || !definition.shortdef || definition.hwi.hw !== word){
+  if (!definition || !definition.shortdef || definition.meta.id.split(':')[0] !== word){
     return {invalid: 'no such word'}
   //make sure the word is viable
   } else if (!(okayPartsOfSpeech.includes(definition.fl))) {
