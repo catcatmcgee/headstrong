@@ -67,15 +67,14 @@ const Message = sequelize.define('messages', {
   },
   username: {
     type: Sequelize.STRING,
-  },
-  date: {
-    type: Sequelize.STRING,
+    allowNull: false,
   },
   text: {
     type: Sequelize.STRING,
+    allowNull: false,
   }
 });
-Countdown.sync({alter: true});
+Message.sync({alter: true});
 
 const addMessage = async(username, date, text) => {
   Message.create({
@@ -91,12 +90,19 @@ const addMessage = async(username, date, text) => {
   })
 };
 
-const getAllMessages = (user) => {
+const getAllMessages = () => {
   return Message.findAll();
 };
 
-const deleteMessage = (body) => {
-  const { id } = body;
+const getMessage = (id) => {
+  return Message.findOne({
+    where: {
+      id: id
+    }
+  });
+};
+
+const deleteMessage = (id) => {
   Message.destroy({
     where: {
       id: id
@@ -125,13 +131,8 @@ const deleteAllMessages = () => {
 
 const editMessage = (body) => {
   const { id, text } = body;
-  Message.update({
-    text: text
-  },
-  {
-    where: {
-      id: id
-    }
+  Message.update({text: text}, {
+    where: { id: id }
   })
   .then(() => {
     console.log('Message updated');
@@ -247,6 +248,7 @@ module.exports = {
   addCountdown,
   Countdown,
   addMessage,
+  getMessage,
   getAllMessages,
   deleteMessage,
   deleteAllMessages,
