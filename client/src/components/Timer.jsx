@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-const TimerComponent = ({setStatus}) => {
+const TimerComponent = ({turnStatus, setTurnStatus}) => {
   const [timer, setTimer] = useState(10);
 
   useEffect(() => {
@@ -11,7 +11,11 @@ const TimerComponent = ({setStatus}) => {
 
       return () => clearInterval(countdown);
     } else {
-      setStatus('out of time');
+      if (turnStatus === 'user challenged') {
+        setTurnStatus('opponent out of time');
+      } else if (turnStatus === 'opponent challenged') {
+        setTurnStatus('user out of time')
+      }
     }
   }, [timer]);
 
