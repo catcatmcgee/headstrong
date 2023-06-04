@@ -10,7 +10,6 @@ const Ghost = Router();
 Ghost.post('/', async (req, res) => {
   const { game }  = req.body;
   const nextMove = getNextMove(game, winningTree, wordTree);
-  console.log('nextMove', nextMove);
   try {
     res.status(201).send(nextMove);
   } catch (err) {
@@ -29,7 +28,6 @@ Ghost.get('/', async(req, res) => {
   } else {
     try {
       const challengeResults = await getChallengeResults(wholeWord);
-      console.log('challenge Results inside ghost router', challengeResults)
       res.status(200).send(challengeResults);
     } catch (err) {
       console.log('Failed Challenge Lookup', err);
