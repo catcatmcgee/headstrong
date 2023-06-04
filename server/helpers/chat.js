@@ -5,7 +5,7 @@ const { OPENAI_TOKEN } = process.env;
 
 const createMessage = async (gameUpdate) => {
   try {
-    const chatMessages = getAllMessages()
+    const chatMessages = getAllMessages().map(message => message.text);
     const {text: story} = await Countdown.findOne({ where: { username: user } });
     const initialPrompt = `You are a mean internet bully who is playing an online
       word game. I'm going to describe the game and you're going to respond with
@@ -29,7 +29,7 @@ const createMessage = async (gameUpdate) => {
     })
 
     const reply = data.choices[0].message.content
-    addMessage('opponent', new Date, reply);
+    addMessage('opponent', reply);
     console.log(`${reply}\nSaved to database`)
   }catch (error) {
     console.error('Error:', error);
