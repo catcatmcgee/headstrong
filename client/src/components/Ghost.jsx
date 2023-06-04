@@ -44,7 +44,6 @@ const Ghost = () => {
       }
     };
     window.addEventListener('keydown', handleKeyDown);
-    console.log(moveInput)
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
@@ -99,7 +98,6 @@ const Ghost = () => {
     setTurnStatus('user challenged');
     try {
       const {data} = await axios.get(`/api/ghost`, { params: { game } });
-      console.log(data);
       if(data.invalid){
         setTimeout(() => {setTurnStatus('user challenge success')}, randomTime(8000));
       } else if(Object.keys(data).length) {
@@ -107,7 +105,6 @@ const Ghost = () => {
           const word = Object.keys(data)[0]
           setTurnStatus('user challenge failed')
           setGame(word)
-          console.log(word, data, data[word])
           setDefinition(data[word])
         }, randomTime(10000));
       }
