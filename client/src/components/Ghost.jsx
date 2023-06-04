@@ -4,36 +4,51 @@ import ChatSidebar from './ChatSidebar.jsx'
 import Timer from './Timer.jsx'
 
 const Ghost = () => {
-  const [userMove, setUserMove] = useState('');
+  const [moveInput, setMoveInput] = useState('');
+  const [challengeInput, setChallengeInput] = useState('')
   const [game, setGame] = useState('');
-  //const [status, setStatus] = useState('init');
-  const [status, setStatus] = useState('user turn');
+  //const [turnStatus, setTurnStatus] = useState('init');
+  const [turnStatus, setTurnStatus] = useState('user turn');
   const [userLives, setUserLives] = useState('GHOST');
   const [opponentLives, setOpponentLives] = useState('GHOST');
   const [definition, setDefinition] = useState('');
   const [disableSubmit, setDisableSubmit] = useState(false);
 
-  /* * * * * * * * * * * USE EFFECTS * * * * * * * * * * * * */
+  /* * * * * * * * * * * HANDLING KEY STROKES * * * * * * * * * * * * */
   useEffect(() => {
     const handleKeyDown = (event) => {
       if (event.key.match(/^[a-z]$/i)) {
-        setUserMove(event.key);
+        if(turnStatus === 'user challenged'){
+          setChallengeInput(challengeInput + event.key)
+        } else {
+          setMoveInput(event.key);
+        }
       } else if (event.key === 'Backspace') {
-        setUserMove('');
+        if(turnStatus === 'user challenged'){
+          setChallengeInput(challengeInput.slice(0, -1))
+        } else {
+          setMoveInput('');
+        }
       } else if (event.key === 'Enter') {
-        if(status==='user turn'){
+        if(turnStatus==='user turn'){
           handleSubmit(event);
+        } else if (turnStatus === 'user challenged'){
+          handleChallengeSubmit();
         } else {
           startRound(event);
         }
       }
     };
     window.addEventListener('keydown', handleKeyDown);
-    console.log(userMove)
+    console.log(moveInput)
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [userMove, status]);
+  }, [moveInput, turnStatus]);
+
+  useEffect(()=>{
+    console.log(turnStatus);
+  }, [turnStatus]);
 
   /* * * * * * * * * * * SERVER REQUESTS * * * * * * * * * * * * */
   const handleSubmit = async (e) => {
@@ -42,30 +57,30 @@ const Ghost = () => {
     setDisableSubmit(true);
 
     try {
-      const { data } = await axios.post('/api/ghost', {game: (game + userMove).toLowerCase()});
+      const { data } = await axios.post('/api/ghost', {game: (game + moveInput).toLowerCase()});
       if (data.end === 'odd') {
-        setGame(game + userMove);
+        setGame(game + moveInput);
         setTimeout(() => {
-          setStatus('complete');
+          setTurnStatus('complete');
           setUserLives(userLives.slice(0,-1))
         }, 1000)
       } else if (data.end === 'even') {
-        setGame(game + userMove + data.letter);
+        setGame(game + moveInput + data.letter);
         setTimeout(() => {
-          setStatus('cheated');
+          setTurnStatus('cheated');
           setOpponentLives(opponentLives.slice(0,-1))
         }, 1000)
       } else if (data === '') {
-        setGame(game + userMove);
+        setGame(game + moveInput);
         setTimeout(() => {
-          setStatus('invalid');
+          setTurnStatus('opponent challenged');
           setUserLives(userLives.slice(0,-1))
         }, 1000)
       } else {
-      setGame(game + userMove);
+      setGame(game + moveInput);
       setTimeout(() => {setGame((game) => game + data)}, 1000)
       }
-      setUserMove('');
+      setMoveInput('');
       setTimeout(() => {
         setDisableSubmit(false);
       }, 1000);
@@ -77,18 +92,18 @@ const Ghost = () => {
     }
   };
 
-  const handleChallenge = async (e) => {
+  const handleUserChallenge = async (e) => {
     if(e) e.preventDefault();
-    setStatus('user challenged');
+    setTurnStatus('user challenged');
     try {
       const {data} = await axios.get(`/api/ghost`, { params: { game } });
       console.log(data);
       if(data.invalid){
-        setTimeout(() => {setStatus('user challenge success')}, randomTime(9000));
+        setTimeout(() => {setTurnStatus('user challenge success')}, randomTime(8000));
       } else if(Object.keys(data).length) {
         setTimeout(() => {
           const word = Object.keys(data)[0]
-          setStatus('user challenge failed')
+          setTurnStatus('user challenge failed')
           setGame(word)
           console.log(word, data, data[word])
           setDefinition(data[word])
@@ -99,6 +114,12 @@ const Ghost = () => {
     }
   };
 
+  const handleChallengeSubmit = async (e) => {
+    setChallengeInput('');
+    setGame(game+challengeInput);
+    setTurnStatus('invalid');
+  };
+
   /* * * * * * * * * * * HELPER FUNCTIONS * * * * * * * * * * * * */
   function randomTime(max) {
     return Math.floor(Math.random()*(max));
@@ -106,19 +127,19 @@ const Ghost = () => {
 
   function startRound(e) {
     e.preventDefault();
-    setUserMove('')
+    setMoveInput('')
     setGame('')
-    setStatus('user turn')
+    setTurnStatus('user turn')
   }
 
   function findMatch() {
-    setStatus('pairing');
-    setTimeout(()=> {setStatus('user turn')}, randomTime(5000));
+    setTurnStatus('pairing');
+    setTimeout(()=> {setTurnStatus('user turn')}, randomTime(5000));
   }
 
   /* * * * * * * ALTERNATIVE CONDITIONAL RENDERINGS * * * * * * * */
 
-  // if(status==='init'){
+  // if(turnStatus==='init'){
   //   return (
   //     <div className="gamepage">
   //       <div className="text wrap">
@@ -154,7 +175,7 @@ const Ghost = () => {
   //   )
   // }
 
-  // if(status==='pairing'){
+  // if(turnStatus==='pairing'){
   //   return (
   //     <div className="gamepage">
   //       <div className="text wrap">
@@ -169,12 +190,12 @@ const Ghost = () => {
       <div className="score-tracker">
         <div className="score-item">
           <h2 className="text">You</h2>
-          <h2 className="logo">{userLives}</h2>
+          <h2 className="game-logo">{userLives}</h2>
         </div>
         <div className="score-divider"></div>
         <div className="score-item">
           <h2 className="text">Opponent</h2>
-          <h2 className="logo">{opponentLives}</h2>
+          <h2 className="game-logo">{opponentLives}</h2>
         </div>
       </div>
     )
@@ -184,49 +205,46 @@ const Ghost = () => {
   return (
     <div className="gamepage">  
       <form className="text game">
-        <br />
-        <br />
         <ScoreTracker userLives={userLives} opponentLives={opponentLives} />
-        <h2>Current Game</h2>
-        <h2 className='logo'>{game.toUpperCase()}</h2>
-        {status === 'user turn' ? (
-          <div>
-            <div className="game-input">{userMove.toUpperCase()}</div>
-            <button className="urlButton game-button" onClick={handleSubmit}>Submit</button>
-            <button className="urlButton challenge-button" onClick={handleChallenge}>Challenge</button>
-          </div>
-        ) : status === 'user challenged' ? (
-          <div>
-            <h1>YOU HAVE CHALLENGED YOUR OPPONENT</h1>
-            <h3>THEY HAVE 10 SECONDS TO SUMBIT A CORRECT WORD</h3>
-            <Timer setStatus={setStatus}/>
-          </div>
-        ) : status === 'user challenge failed' ? (
-          <div>
-            <h1>YOUR OPPONENT SUBMITTED A VALID WORD</h1>
-            <h3>WORD DEFINITION:</h3>
-            <h3>"{definition}"</h3>
-            <button className="urlButton" onClick={startRound}>Start Round</button>
-          </div>
-        ) : status === 'complete' ? (
-          <div>
-            <h1>YOU IDIOT, YOU FINISHED A WORD</h1>
-            <button className="urlButton" onClick={startRound}>Start Round</button>
-          </div>
-        ) : status === 'cheated' ? (
-          <div>
-            <h1>YOU'RE A CHEARER</h1>
-            <button className="urlButton" onClick={startRound}>Start Round</button>
-          </div>
-        ) : status === 'invalid' ? (
-          <div>
-            <h1>THATS NOT A WORD, STUPID</h1>
-            <button className="urlButton" onClick={startRound}>Start Round</button>
-          </div>
-        ) : (
-          null
-        )}
-
+        <br />
+        <div className="round">
+          <h2>Current Game</h2>
+          <h2 className='logo'>{game.toUpperCase()}</h2>
+          {turnStatus === 'user turn' ? (
+            <div>
+              <div className="game-input">{moveInput.toUpperCase()}</div>
+              <button className="urlButton game-button" onClick={handleSubmit}>Submit</button>
+              <button className="urlButton challenge-button" onClick={handleUserChallenge}>Challenge</button>
+            </div>
+          ) : turnStatus === 'user challenged' ? (
+            <div>
+              <Timer turnStatus={turnStatus} setTurnStatus={setTurnStatus}/>
+              <h1>YOU HAVE CHALLENGED YOUR OPPONENT</h1>
+              <h3>THEY HAVE 10 SECONDS TO SUMBIT A CORRECT WORD</h3>
+            </div>
+          ) : turnStatus === 'user challenge failed' ? (
+            <div>
+              <h1>YOUR OPPONENT SUBMITTED A VALID WORD</h1>
+              <h3>WORD DEFINITION:</h3>
+              <h3>"{definition}"</h3>
+              <button className="urlButton" onClick={startRound}>Start Round</button>
+            </div>
+          ) : turnStatus === 'opponent challenged' ? (
+            <div>
+              <Timer turnStatus={turnStatus} setTurnStatus={setTurnStatus}/>
+              <h1>YOUR OPPONENT HAS CHALLENGED YOU</h1>
+              <h3>YOU HAVE 10 SECONDS TO ENTER A VALID WORD</h3>
+              <div className="challenge-input">{game.toUpperCase()}{challengeInput.toUpperCase()}</div>
+              <button className="urlButton" onClick={()=>handleChallengeSubmit}>Submit</button>
+            </div>
+          ) : (
+            <div>
+              <h1>YOU LOST A LIFE</h1>
+              <h3>reason: {turnStatus}</h3>
+              <button className="urlButton" onClick={startRound}>Start Round</button>
+            </div>
+          )}
+        </div>
       </form>
       <ChatSidebar className="sidebar"/>
     </div>
