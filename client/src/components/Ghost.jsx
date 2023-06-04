@@ -1,59 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import ChatSidebar from './ChatSidebar.jsx'
+import Timer from './Timer.jsx'
 
 const Ghost = () => {
-
   const [userMove, setUserMove] = useState('');
   const [game, setGame] = useState('');
   //const [status, setStatus] = useState('init');
   const [status, setStatus] = useState('user turn');
   const [userLives, setUserLives] = useState('GHOST');
-  const [computerLives, setComputerLives] = useState('GHOST');
+  const [opponentLives, setOpponentLives] = useState('GHOST');
+  const [definition, setDefinition] = useState('');
 
-  const handleSubmit = async (e) => {
-    if(e) e.preventDefault();
-    try {
-      const { data } = await axios.post('/api/ghost', {game: (game + userMove).toLowerCase()});
-      if (data.end === 'odd') {
-        setGame(game + userMove);
-        setTimeout(() => {setStatus('complete');
-        setUserLives(userLives.slice(0,-1))}, 1000)
-      } else if (data.end === 'even') {
-        setGame(game + userMove + data.letter);
-        setTimeout(() => {setStatus('cheated');
-        setComputerLives(computerLives.slice(0,-1))}, 1000)
-      } else if (data === '') {
-        setGame(game + userMove);
-        setTimeout(() => {setStatus('invalid');
-        setUserLives(userLives.slice(0,-1))}, 1000)
-      } else {
-      setGame(game + userMove);
-      setTimeout(() => {setGame((game) => game + data)}, 1000)
-      }
-      setUserMove('');
-    } catch(err) {
-      console.warn(err);
-    }
-  };
-
-  const handleChallenge = async (e) => {
-    if(e) e.preventDefault();
-    try {
-      const data  = await axios.get(`/api/ghost`, { params: { game } });
-      console.log(data)
-      //handle data
-    } catch(err) {
-      console.warn(err);
-    }
-  };
-
-  const startRound = () => {
-    setUserMove('')
-    setGame('')
-    setStatus('user turn')
-  }
-
+  /* * * * * * * * * * * USE EFFECTS * * * * * * * * * * * * */
   useEffect(() => {
     const handleKeyDown = (event) => {
       if (event.key.match(/^[a-z]$/i)) {
@@ -75,10 +34,86 @@ const Ghost = () => {
     };
   }, [userMove]);
 
+  useEffect(() => {
+    const throttleSubmit = throttle(handleSubmit, 1000);
+    return () => {
+      throttleSubmit.cancel();
+    };
+  }, []);
+
+  /* * * * * * * * * * * SERVER REQUESTS * * * * * * * * * * * * */
+  const handleSubmit = async (e) => {
+    if(e) e.preventDefault();
+    try {
+      const { data } = await axios.post('/api/ghost', {game: (game + userMove).toLowerCase()});
+      if (data.end === 'odd') {
+        setGame(game + userMove);
+        setTimeout(() => {
+          setStatus('complete');
+          setUserLives(userLives.slice(0,-1))
+        }, 1000)
+      } else if (data.end === 'even') {
+        setGame(game + userMove + data.letter);
+        setTimeout(() => {
+          setStatus('cheated');
+          setOpponentLives(opponentLives.slice(0,-1))
+        }, 1000)
+      } else if (data === '') {
+        setGame(game + userMove);
+        setTimeout(() => {
+          setStatus('invalid');
+          setUserLives(userLives.slice(0,-1))
+        }, 1000)
+      } else {
+      setGame(game + userMove);
+      setTimeout(() => {setGame((game) => game + data)}, 1000)
+      }
+      setUserMove('');
+    } catch(err) {
+      console.warn(err);
+    }
+  };
+
+  const handleChallenge = async (e) => {
+    if(e) e.preventDefault();
+    setStatus('user challenged');
+    try {
+      const {data} = await axios.get(`/api/ghost`, { params: { game } });
+      console.log(data);
+      if(data.invalid){
+        setTimeout(() => {setStatus('user challenge success')}, randomTime(10000));
+      } else if(Object.keys(data).length) {
+        setTimeout(() => {
+          const word = Object.keys(data)[0]
+          setStatus('user challenge failed')
+          setGame(word)
+          console.log(word, data, data[word])
+          setDefinition(data.word)
+        }, randomTime(10000));
+      }
+    } catch(err) {
+      console.warn(err);
+    }
+  };
+
+  /* * * * * * * * * * * HELPER FUNCTIONS * * * * * * * * * * * * */
+  const randomTime = (max) => {
+    return Math.floor(Math.random()*(max));
+  }
+
+  const startRound = (e) => {
+    e.preventDefault();
+    setUserMove('')
+    setGame('')
+    setStatus('user turn')
+  }
+
   const findMatch = () => {
     setStatus('pairing');
-    setTimeout(()=> {setStatus('user turn')}, Math.floor(Math.random()*5000));
+    setTimeout(()=> {setStatus('user turn')}, randomTime(5000));
   }
+
+  /* * * * * * * ALTERNATIVE CONDITIONAL RENDERINGS * * * * * * * */
 
   // if(status==='init'){
   //   return (
@@ -126,7 +161,7 @@ const Ghost = () => {
   //   )
   // }
 
-  const ScoreTracker = ({userLives, computerLives}) => {
+  const ScoreTracker = ({userLives, opponentLives}) => {
     return (
       <div className="score-tracker">
         <div className="score-item">
@@ -135,28 +170,40 @@ const Ghost = () => {
         </div>
         <div className="score-divider"></div>
         <div className="score-item">
-          <h2 className="text">Computer</h2>
-          <h2 className="logo">{computerLives}</h2>
+          <h2 className="text">Opponent</h2>
+          <h2 className="logo">{opponentLives}</h2>
         </div>
       </div>
     )
   }
     
-
-  
+  /* * * * * * * MAIN RENDERING * * * * * * * */
   return (
     <div className="gamepage">  
       <form className="text game">
         <br />
         <br />
-        <ScoreTracker userLives={userLives} computerLives={computerLives} />
-
+        <ScoreTracker userLives={userLives} opponentLives={opponentLives} />
+        <h2>Current Game</h2>
+        <h2 className='logo'>{game.toUpperCase()}</h2>
         {status === 'user turn' ? (
           <div>
-            <h2>Current Game: {game.toUpperCase()}</h2>
             <div className="game-input">{userMove.toUpperCase()}</div>
             <button className="urlButton game-button" onClick={handleSubmit}>Submit</button>
             <button className="urlButton challenge-button" onClick={handleChallenge}>Challenge</button>
+          </div>
+        ) : status === 'user challenged' ? (
+          <div>
+            <h1>YOU HAVE CHALLENGED YOUR OPPONENT</h1>
+            <h3>THEY HAVE 10 SECONDS TO SUMBIT A CORRECT WORD</h3>
+            <Timer setStatus={setStatus}/>
+          </div>
+        ) : status === 'user challenge failed' ? (
+          <div>
+            <h1>YOUR OPPONENT SUBMITTED A VALID WORD</h1>
+            <h3>WORD DEFINITION:</h3>
+            <h3>{definition}</h3>
+            <button className="urlButton" onClick={startRound}>Start Round</button>
           </div>
         ) : status === 'complete' ? (
           <div>
