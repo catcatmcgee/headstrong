@@ -24,17 +24,16 @@ Ghost.get('/', async(req, res) => {
   const currentNode = getCurrentNode(word, wordTree);
   if(!currentNode){
     res.status(200).send(null);
-  }
-  const wholeWord = getWordFromFragment(word, currentNode, wordTree)
-  if(!wholeWord){
+  } else if (!getWordFromFragment(word, currentNode, wordTree)){
     res.status(200).send(null);
-  }
-  try {
-    const challengeResults = await getChallengeResults(wholeWord);
-    console.log('challenge Results inside ghost router', challengeResults)
-    res.status(200).send(challengeResults);
-  } catch (err) {
-    console.log('Failed Challenge Lookup', err);
+  } else {
+    try {
+      const challengeResults = await getChallengeResults(wholeWord);
+      console.log('challenge Results inside ghost router', challengeResults)
+      res.status(200).send(challengeResults);
+    } catch (err) {
+      console.log('Failed Challenge Lookup', err);
+    }
   }
 })
 
