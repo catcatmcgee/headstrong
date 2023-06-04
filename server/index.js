@@ -6,7 +6,7 @@ const { Location } = require('./api/geolocation');
 const { Journals } = require('./api/journals');
 const { Stories } = require('./api/stories');
 const { Ghost } = require('./api/ghost');
-const { Messages } = require('./api/messages');
+const { Messages } = require('./api/chat');
 require('./passport.js');
 const passport = require('passport');
 const session = require('express-session');
