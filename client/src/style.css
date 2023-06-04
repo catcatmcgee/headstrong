@@ -166,6 +166,16 @@
 }
 
 /* GAME STUFF */
+.char-square {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  line-height: 24px;
+  text-align: center;
+  border: 1px solid rgb(255, 255, 255);
+  border-radius: 3px;
+  margin: 2px;
+}
 .gamepage {
   background-color: rgba(0, 0, 0, 0.5);
   padding: 7%;
@@ -183,33 +193,45 @@
   margin-right: 10%;
 }
 .game-input {
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: 4px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(4.5px);
+  -webkit-backdrop-filter: blur(4.5px);
+  border: 1px solid rgba(255, 255, 255, 0.34);
 	width: 56px;
 	height: 56px;
-	border-radius: 4px;
-  border-color: #263d4a;
-  border-style: solid;
-	background-color: rgba(255, 255, 255, 0.3);
 	transition: 0.3s all;
-	backdrop-filter: blur(2px);
   color: white;
   font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
   font-size: 56px;
   text-align: center;
 }
+.game-logo {
+	font-size: 3rem;
+	font-family: 'Monofett', cursive;
+	margin-top: 10px;
+}
 .score-tracker {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(4.5px);
+  -webkit-backdrop-filter: blur(4.5px);
+  border: 1px solid rgba(255, 255, 255, 0.34);
   padding: 20px;
   display: flex;
-  justify-content: space-between;
+  justify-content: space-evenly;
   align-items: center;
-  position: relative;
-  top: -60px;
 }
 
 .score-item {
-  flex-basis: calc(50% - 50px); /* Adjust the spacing as needed */
+  flex-basis: calc(50% - 50px);
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
+  padding: 10px;
 }
 
 .score-divider {
@@ -223,9 +245,15 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  background-color: #fefefe2d;
+  background: rgba(255, 255, 255, 0.18);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(4.5px);
+  -webkit-backdrop-filter: blur(4.5px);
+  border: 1px solid rgba(255, 255, 255, 0.34);
   padding: 20px;
-  width: 800px;
+  width: 30vw;
+  max-width: 400px;
+  min-width: 200px;
   margin: 20px;
   border-radius: 20px;
 }
