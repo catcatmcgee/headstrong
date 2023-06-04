@@ -10740,7 +10740,7 @@ dreariness
 dreary
 dredge
 dredger
-dregs
+dreg
 drench
 drenched
 drenching
@@ -15517,7 +15517,7 @@ gritty
 grizzled
 grizzly
 groan
-groats
+groat
 grocer
 groceries
 grocery
