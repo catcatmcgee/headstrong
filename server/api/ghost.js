@@ -20,7 +20,7 @@ Ghost.post('/', async (req, res) => {
 });
 
 Ghost.get('/', async(req, res) => {
-  const word  = req.query.game;
+  const word = req.query.game;
   const currentNode = getCurrentNode(word, wordTree);
   if(!currentNode){
     res.status(200).send(null);
