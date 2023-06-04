@@ -11,6 +11,7 @@ const Ghost = () => {
   const [userLives, setUserLives] = useState('GHOST');
   const [opponentLives, setOpponentLives] = useState('GHOST');
   const [definition, setDefinition] = useState('');
+  const [disableSubmit, setDisableSubmit] = useState(false);
 
   /* * * * * * * * * * * USE EFFECTS * * * * * * * * * * * * */
   useEffect(() => {
@@ -21,9 +22,9 @@ const Ghost = () => {
         setUserMove('');
       } else if (event.key === 'Enter') {
         if(status==='user turn'){
-          handleSubmit();
+          handleSubmit(event);
         } else {
-          startRound();
+          startRound(event);
         }
       }
     };
@@ -32,18 +33,14 @@ const Ghost = () => {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [userMove]);
-
-  useEffect(() => {
-    const throttleSubmit = throttle(handleSubmit, 1000);
-    return () => {
-      throttleSubmit.cancel();
-    };
-  }, []);
+  }, [userMove, status]);
 
   /* * * * * * * * * * * SERVER REQUESTS * * * * * * * * * * * * */
   const handleSubmit = async (e) => {
     if(e) e.preventDefault();
+    if (disableSubmit) return;
+    setDisableSubmit(true);
+
     try {
       const { data } = await axios.post('/api/ghost', {game: (game + userMove).toLowerCase()});
       if (data.end === 'odd') {
@@ -69,8 +66,14 @@ const Ghost = () => {
       setTimeout(() => {setGame((game) => game + data)}, 1000)
       }
       setUserMove('');
+      setTimeout(() => {
+        setDisableSubmit(false);
+      }, 1000);
     } catch(err) {
       console.warn(err);
+      setTimeout(() => {
+        setDisableSubmit(false);
+      }, 1000);
     }
   };
 
@@ -81,14 +84,14 @@ const Ghost = () => {
       const {data} = await axios.get(`/api/ghost`, { params: { game } });
       console.log(data);
       if(data.invalid){
-        setTimeout(() => {setStatus('user challenge success')}, randomTime(10000));
+        setTimeout(() => {setStatus('user challenge success')}, randomTime(9000));
       } else if(Object.keys(data).length) {
         setTimeout(() => {
           const word = Object.keys(data)[0]
           setStatus('user challenge failed')
           setGame(word)
           console.log(word, data, data[word])
-          setDefinition(data.word)
+          setDefinition(data[word])
         }, randomTime(10000));
       }
     } catch(err) {
@@ -97,18 +100,18 @@ const Ghost = () => {
   };
 
   /* * * * * * * * * * * HELPER FUNCTIONS * * * * * * * * * * * * */
-  const randomTime = (max) => {
+  function randomTime(max) {
     return Math.floor(Math.random()*(max));
   }
 
-  const startRound = (e) => {
+  function startRound(e) {
     e.preventDefault();
     setUserMove('')
     setGame('')
     setStatus('user turn')
   }
 
-  const findMatch = () => {
+  function findMatch() {
     setStatus('pairing');
     setTimeout(()=> {setStatus('user turn')}, randomTime(5000));
   }
@@ -202,7 +205,7 @@ const Ghost = () => {
           <div>
             <h1>YOUR OPPONENT SUBMITTED A VALID WORD</h1>
             <h3>WORD DEFINITION:</h3>
-            <h3>{definition}</h3>
+            <h3>"{definition}"</h3>
             <button className="urlButton" onClick={startRound}>Start Round</button>
           </div>
         ) : status === 'complete' ? (
