@@ -7,7 +7,7 @@ const wordArray = fs.readFileSync('words.txt', 'utf8').split('\n');
 const wordTree = JSON.parse(fs.readFileSync('wordtree.json', 'utf8'));
 
 
-const winners = ['ahead', 'black', 'bleed', 'blimp', 'bloat', 'bluff', 'clarity', 'cleft', 'cliff', 'cloak', 'cluck', 'draft', 'dregs', 'drift', 'droll', 'drunk', 'dryly', 'equal', 'equator', 'frail', 'freak', 'friar', 'frock', 'fruit', 'graft', 'grenade', 'grill', 'groan', 'gruff', 'illegal', 'knack', 'knead', 'knife', 'knifing', 'knock', 'knuckle', 'lying', 'lymph', 'lynch', 'lyric', 'nylon', 'nymph', 'ozone', 'pneumatic', 'quack', 'quell', 'quick', 'quonset', 'squeamish', 'squeeze', 'squeezing', 'squelch', 'twain', 'tweed', 'twice', 'twofold', 'ulcer', 'ultra', 'vulture', 'whack', 'wheat', 'which', 'whoop', 'xylem', 'yield']
+const winners = ['ahead', 'black', 'bleed', 'blimp', 'bloat', 'bluff', 'clarity', 'cleft', 'cliff', 'cloak', 'cluck', 'draft', 'dregs', 'drift', 'droll', 'drunk', 'dryly', 'equal', 'equator', 'frail', 'freak', 'friar', 'frock', 'fruit', 'graft', 'grenade', 'grill', 'groan', 'gruff', 'illegal', 'knack', 'knead', 'knife', 'knifing', 'knock', 'knuckle', 'lying', 'lymph', 'lynch', 'lyric', 'nylon', 'nymph', 'ozone', 'pneumatic', 'quack', 'quell', 'quick', 'quonset', 'squeamish', 'squeeze', 'squeezing', 'squelch', 'twain', 'tweed', 'twice', 'twofold', 'ulcer', 'ultra', 'vulture', 'whack', 'wheat', 'which', 'whoop', 'xylem', 'xylophone', 'xylophonist', 'yield']
 
 const getCurrentNode = (word, node) => {
   if (word.length === 0) {
