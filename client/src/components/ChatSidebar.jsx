@@ -57,8 +57,13 @@ const ChatSidebar = ({setChatFocused, turnStatus}) => {
   async function getOpponentMessage(){
     try{
       await axios.post('api/messages/update', {update: turnStatus});
-      const {data} = await axios.get('api/messages');
-      setMessages(data);
+      setTimeout(()=> {
+        const getAllMessages = async ()=>{
+          const {data} = await axios.get('api/messages')
+          setMessages(data);
+        }
+        getAllMessages();
+      }, 200)
     } catch(err) {
       console.warn(err);
     }
