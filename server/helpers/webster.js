@@ -10,19 +10,19 @@ const okayPartsOfSpeech = [
   "conjunction",
   "interjection",
   "pronoun",
-  "adverb or adjective"
+  "adverb or adjective",
 ]
 
 const processDefinition = (definition, word) => {
   //no definition
-  if (!definition || !definition.shortdef || !definition.meta.stems.includes(word)){
+  if (!definition[0] || !definition[0].shortdef || !definition[0].meta.stems.includes(word)){
     return {invalid: 'no such word'}
   //make sure the word is viable
-  } else if (!(okayPartsOfSpeech.includes(definition.fl))) {
-    return {invalid: definition.fl}
+  } else if (definition[0].fl && !(okayPartsOfSpeech.includes(definition[0].fl))) {
+    return {invalid: definition[0].fl}
   //return the word
   } else {
-    return {[word]: definition.shortdef[0]}
+    return definition[0].shortdef[0] ? {[word]: definition[0].shortdef[0]} : {[word]: definition[1].shortdef[0]}
   }
 }
 
@@ -30,8 +30,8 @@ const getChallengeResults = async (word) => {
   try {
     const {data} = await axios.get(`https://www.dictionaryapi.com/api/v3/references/collegiate/json/${word}?key=${WEBSTER_TOKEN}`);
     // console.log('first definition', data[0], 'word', word)
-    const lookupResults = processDefinition(data[0], word);
-    // console.log('wordLookupResults', lookupResults)
+    const lookupResults = processDefinition(data, word);
+    console.log('wordLookupResults', word, lookupResults)
     return lookupResults;
   } catch (err){
     console.log("webster api error:", err);

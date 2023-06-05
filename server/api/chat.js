@@ -11,8 +11,9 @@ Messages.get('/', (req, res) => {
 
 Messages.post('/update', (req, res) => {
   const { Headstrong: user } = req.cookies;
-  const { body: update } = req
-  return createMessage(update, user)
+  const { update, userLives } = req.body
+  console.log(userLives);
+  return createMessage(update, user, userLives)
     .then(() => res.status(201).send(null))
     .catch((err) => console.warn(err));
 });

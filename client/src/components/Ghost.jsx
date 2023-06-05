@@ -210,7 +210,10 @@ const Ghost = () => {
       <form className="text game">
         <ScoreTracker userLives={userLives} opponentLives={opponentLives} />
         <br />
-        <div className="round">
+        {userLives.length === 0
+        ? (<h1>YOU LOSE!</h1>)
+        : (
+          <div className="round">
           <h2>ROUND #</h2>
           <br></br>
           <div className="round-word-fragment">
@@ -256,9 +259,9 @@ const Ghost = () => {
               <button className="urlButton" onClick={startRound}>Start Round</button>
             </div>
           )}
-        </div>
+        </div>)}   
       </form>
-      <ChatSidebar className="sidebar" turnStatus={turnStatus} setChatFocused={setChatFocused}/>
+      <ChatSidebar className="sidebar" userLives={userLives} turnStatus={turnStatus} setChatFocused={setChatFocused}/>
     </div>
   );
 };

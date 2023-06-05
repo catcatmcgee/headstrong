@@ -5,7 +5,6 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 
 const importantUpdate = [
-  'paired',
   'invalid',
   'user challenge failed',
   'user out of time',
@@ -13,7 +12,7 @@ const importantUpdate = [
   'user lost',
   'user challenge success'
 ]
-const ChatSidebar = ({setChatFocused, turnStatus}) => {
+const ChatSidebar = ({setChatFocused, turnStatus, userLives}) => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [disableReply, setDisableReply] = useState(false);
@@ -69,12 +68,13 @@ const ChatSidebar = ({setChatFocused, turnStatus}) => {
     setDisableReply(true);
     let update;
     if(message){
-      update = message;
+      update = message
     } else {
-      update = turnStatus;
+      update = turnStatus
     }
+    console.log('userLives', userLives.length);
     try{
-      await axios.post('api/messages/update', {update: update});
+      await axios.post('api/messages/update', {update: update, userLives: userLives.length});
       setTimeout(()=> {
         const getAllMessages = async ()=>{
           const {data} = await axios.get('api/messages')
