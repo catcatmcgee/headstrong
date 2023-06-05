@@ -29,9 +29,9 @@ const processDefinition = (definition, word) => {
 const getChallengeResults = async (word) => {
   try {
     const {data} = await axios.get(`https://www.dictionaryapi.com/api/v3/references/collegiate/json/${word}?key=${WEBSTER_TOKEN}`);
-    console.log('first definition', data[0], 'word', word)
+    // console.log('first definition', data[0], 'word', word)
     const lookupResults = processDefinition(data[0], word);
-    console.log('wordLookupResults', lookupResults)
+    // console.log('wordLookupResults', lookupResults)
     return lookupResults;
   } catch (err){
     console.log("webster api error:", err);
