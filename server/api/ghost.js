@@ -26,6 +26,7 @@ Ghost.get('/', async(req, res) => {
   } else if (!getWordFromFragment(word, currentNode, wordTree)){
     res.status(200).send(null);
   } else {
+    const wholeWord = getWordFromFragment(word, currentNode, wordTree);
     try {
       const challengeResults = await getChallengeResults(wholeWord);
       res.status(200).send(challengeResults);
