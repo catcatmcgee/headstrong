@@ -5,6 +5,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 
 const importantUpdate = [
+  'paired',
   'invalid',
   'user challenge failed',
   'user out of time',
@@ -15,14 +16,16 @@ const importantUpdate = [
 const ChatSidebar = ({setChatFocused, turnStatus}) => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
+  const [disableReply, setDisableReply] = useState(false);
 
-  /* * * * * * * * DELETE MESSAGES FOR NEW GAMES * * * * * * * */
+  /* * * DELETE MESSAGES FOR NEW GAMES * * */
   useEffect(()=>{
     async function startFresh(){
       await axios.delete('api/messages/all');
     }
     startFresh();
   }, []);
+
   /* * * * * * * * SHOW OPPONENT THE GAME STATUS * * * * * * * * * */
   useEffect(()=> {
     if(importantUpdate.includes(turnStatus)){
@@ -62,6 +65,8 @@ const ChatSidebar = ({setChatFocused, turnStatus}) => {
   }
 
   async function getOpponentMessage(message){
+    if (disableReply) return;
+    setDisableReply(true);
     let update;
     if(message){
       update = message;
@@ -77,8 +82,14 @@ const ChatSidebar = ({setChatFocused, turnStatus}) => {
         }
         getAllMessages();
       }, 500)
+      setTimeout(() => {
+        setDisableReply(false);
+      }, 1000);
     } catch(err) {
       console.warn(err);
+      setTimeout(() => {
+        setDisableReply(false);
+      }, 1000);
     }
   }
 

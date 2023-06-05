@@ -277,14 +277,13 @@
 .message-header {
   display: flex;
   justify-content: space-between;
-  font-size: 10px;
+  font-size: 14px;
   position: relative;
   left: 10px;
   width: 90%;
 }
 
 .message-userdate {
-
 }
 
 .message-actions button {
@@ -311,7 +310,7 @@
 
 .message-box {
   padding: 10px;
-  font-size: 12px;
+  font-size: 16px;
   background-color: #40657c1f;
   border: 1px solid #ddd;
   border-radius: 12px;

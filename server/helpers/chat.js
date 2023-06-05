@@ -15,10 +15,12 @@ const usernameArray = fs.readFileSync('usernames.js', 'utf8').split('\n');
 const username = usernameArray[Math.floor(Math.random()*usernameArray.length)]
 
 const getPrompt = async (gameUpdate, user)=>{
-  const { event, task, stressors } = await Countdown.findOne({ where: { username: user } });
+  const { event, stressors } = await Countdown.findOne({ where: { username: user } });
+  console.log(gameUpdate);
 
-  const initPrompt =  `${username} is a bully who is playing a 2 player word game online where you take turns spelling a word fragment and force your opponent to spell a complete word. ${username} responds to descriptions of the game with individual chat messages to his opponent. Include insults and occasionally bring up your opponent's fear of this upcoming event: "${event}" where they have to: "${task}" and are stressed about for this reason: "${stressors}" which they think will go the worst possible way for them. You: You have been matched with your opponent. ${username}: you so aren't ready for this game. You: Your opponent just completed a word, losing them a life. ${username}: wooooow already? dude you suck at this. Hope the ${event} goes better for you than this does. jk that's gonna suck too! haha, hopeless`
-  const newUpdate = "You: " + (gameUpdate === 'invalid' ?
+  const initPrompt =  `${username} is a bully who is playing a 2 player word game online where you take turns spelling a word fragment and force your opponent to spell a complete word. ${username} responds to descriptions of the game with individual chat messages to his opponent. Include insults or occasionally bring up your opponent's fear of this upcoming event: "${event}" that they are stressed about for this reason: "${stressors}". You: You have been matched with your opponent. ${username}: you so aren't ready for this game. hopeless You: Your opponent just completed a word, losing them a life. ${username}: wooooow already? Hope the ${event} goes better for you than this does.`
+  const newUpdate = "You: " + (gameUpdate === 'paired ' ?
+  'you just got matched with your opponent' : gameUpdate === 'invalid' ?
   'your opponent just submitted and invalid word and lost a life' : gameUpdate === 'user challenge failed' ?
   'your opponent just challenged the word you made, but you had a correct word, so they lost a life' : gameUpdate === 'user out of time' ?
   'you challenged your opponent and they ran out of time to submit a valid word' : gameUpdate === 'complete' ?
@@ -40,7 +42,7 @@ const createMessage = async (gameUpdate, user) => {
     const {data} = await openai.createCompletion({
       model: 'text-davinci-003',
       prompt: prompt,
-      temperature: 1.3,
+      temperature: 0.5,
       max_tokens: 50
     });
     const reply = data.choices[0].text

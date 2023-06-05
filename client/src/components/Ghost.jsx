@@ -7,8 +7,8 @@ const Ghost = () => {
   const [moveInput, setMoveInput] = useState('');
   const [challengeInput, setChallengeInput] = useState('')
   const [game, setGame] = useState('');
-  //const [turnStatus, setTurnStatus] = useState('init');
-  const [turnStatus, setTurnStatus] = useState('user turn');
+  const [turnStatus, setTurnStatus] = useState('init');
+  // const [turnStatus, setTurnStatus] = useState('user turn');
   const [userLives, setUserLives] = useState('GHOST');
   const [opponentLives, setOpponentLives] = useState('GHOST');
   const [definition, setDefinition] = useState('');
@@ -98,6 +98,7 @@ const Ghost = () => {
     setTurnStatus('user challenged');
     try {
       const {data} = await axios.get(`/api/ghost`, { params: { game } });
+      console.log('word lookup', data)
       if(data.invalid){
         setTimeout(() => {setTurnStatus('user challenge success')}, randomTime(8000));
       } else if(Object.keys(data).length) {
@@ -134,56 +135,58 @@ const Ghost = () => {
 
   function findMatch() {
     setTurnStatus('pairing');
-    setTimeout(()=> {setTurnStatus('user turn')}, randomTime(5000));
+    const miliseconds = randomTime(7000)
+    setTimeout(()=> {setTurnStatus('paired')}, miliseconds);
+    setTimeout(()=> {setTurnStatus('user turn')}, miliseconds + 10);
   }
 
   /* * * * * * * ALTERNATIVE CONDITIONAL RENDERINGS * * * * * * * */
 
-  // if(turnStatus==='init'){
-  //   return (
-  //     <div className="gamepage">
-  //       <div className="text wrap">
-  //         <h1 className="title">Play a game of ghost?</h1>
-  //         <br />
-  //         <p>The rules are simple.</p>
-  //         <br />
-  //         <p>
-  //           You have five lives, one for each letter of the word "GHOST".
-  //           The objective of the game is to be the last player to have lives
-  //           remaining.
+  if(turnStatus==='init'){
+    return (
+      <div className="gamepage">
+        <div className="text wrap">
+          <h1 className="title">Play a game of ghost?</h1>
+          <br />
+          <p>The rules are simple.</p>
+          <br />
+          <p>
+            You have five lives, one for each letter of the word "GHOST".
+            The objective of the game is to be the last player to have lives
+            remaining.
 
-  //           Each player takes turns adding a letter to an ever-growing word
-  //           fragment. Try not to spell a word (of length 4 letters or more).
-  //           Try to force another player to spell a word, or else try to get a
-  //           player to say a letter that makes it impossible to form a word.
+            Each player takes turns adding a letter to an ever-growing word
+            fragment. Try not to spell a word (of length 4 letters or more).
+            Try to force another player to spell a word, or else try to get a
+            player to say a letter that makes it impossible to form a word.
 
-  //           To start, say any letter of
-  //           the alphabet. Each player then takes turns adding a single letter to
-  //           the word fragment. Instead of adding a letter, a player can “challenge” the
-  //           last player who added a letter, if they thinks a word does not exist
-  //           that starts with the current fragment. If a challenge occurs, the last player
-  //           must try to say a word that begins with the fragment. If the player
-  //           who was challenged is able to spell a word, the challenger loses a life.
-  //           If the player who was challenged cannot spell a word, the challenger
-  //           earns a life. If a player accidentally spells a word, they
-  //           also loses a life. The round ends and a new round is begun up until a player
-  //           loses all of their lives, at which point they die and the other player wins.
-  //         </p>
-  //         <button className="urlButton" onClick={findMatch}>Find A Match</button>
-  //       </div>
-  //     </div>
-  //   )
-  // }
+            To start, say any letter of
+            the alphabet. Each player then takes turns adding a single letter to
+            the word fragment. Instead of adding a letter, a player can “challenge” the
+            last player who added a letter, if they thinks a word does not exist
+            that starts with the current fragment. If a challenge occurs, the last player
+            must try to say a word that begins with the fragment. If the player
+            who was challenged is able to spell a word, the challenger loses a life.
+            If the player who was challenged cannot spell a word, the challenger
+            earns a life. If a player accidentally spells a word, they
+            also loses a life. The round ends and a new round is begun up until a player
+            loses all of their lives, at which point they die and the other player wins.
+          </p>
+          <button className="urlButton" onClick={findMatch}>Find A Match</button>
+        </div>
+      </div>
+    )
+  }
 
-  // if(turnStatus==='pairing'){
-  //   return (
-  //     <div className="gamepage">
-  //       <div className="text wrap">
-  //         <h1 className="title">Finding opponent...</h1>
-  //       </div>
-  //     </div>
-  //   )
-  // }
+  if(turnStatus==='pairing'){
+    return (
+      <div className="gamepage">
+        <div className="text wrap">
+          <h1 className="title">Finding opponent...</h1>
+        </div>
+      </div>
+    )
+  }
 
   const ScoreTracker = ({userLives, opponentLives}) => {
     return (
@@ -221,7 +224,7 @@ const Ghost = () => {
             ) : null}
           </div>
           <br />
-          {turnStatus === 'user turn' ? (
+          {turnStatus === 'user turn' || turnStatus === 'paired' ? (
             <div>
               <button className="urlButton game-button" onClick={handleSubmit}>Submit</button>
               <button className="urlButton challenge-button" onClick={handleUserChallenge}>Challenge</button>
@@ -232,7 +235,7 @@ const Ghost = () => {
               <h1>YOU HAVE CHALLENGED YOUR OPPONENT</h1>
               <h3>THEY HAVE 10 SECONDS TO SUMBIT A CORRECT WORD</h3>
             </div>
-          ) : turnStatus === 'user challenge success' ? (
+          ) : turnStatus === 'user challenge failed' ? (
             <div>
               <h1>YOUR OPPONENT SUBMITTED A VALID WORD</h1>
               <h3>WORD DEFINITION:</h3>
