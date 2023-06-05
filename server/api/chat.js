@@ -11,7 +11,8 @@ Messages.get('/', (req, res) => {
 
 Messages.post('/update', (req, res) => {
   const { Headstrong: user } = req.cookies;
-  return createMessage(req.body, user)
+  const { body: update } = req
+  return createMessage(update, user)
     .then(() => res.status(201).send(null))
     .catch((err) => console.warn(err));
 });
@@ -38,7 +39,7 @@ Messages.delete('/:id', async (req, res) => {
   console.log('id', id);
   try {
     const message = await getMessage(id)
-    if (!message){
+    if (!message) {
       res.status(404).send('Message not found');
     } else {
       deleteMessage(id)
