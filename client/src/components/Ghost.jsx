@@ -105,8 +105,9 @@ const Ghost = () => {
           const word = Object.keys(data)[0]
           setTurnStatus('user challenge failed')
           setGame(word)
+          setUserLives(userLives.slice(0, -1));
           setDefinition(data[word])
-        }, randomTime(10000));
+        }, randomTime(8000));
       }
     } catch(err) {
       console.warn(err);
@@ -231,7 +232,7 @@ const Ghost = () => {
               <h1>YOU HAVE CHALLENGED YOUR OPPONENT</h1>
               <h3>THEY HAVE 10 SECONDS TO SUMBIT A CORRECT WORD</h3>
             </div>
-          ) : turnStatus === 'user challenge failed' ? (
+          ) : turnStatus === 'user challenge success' ? (
             <div>
               <h1>YOUR OPPONENT SUBMITTED A VALID WORD</h1>
               <h3>WORD DEFINITION:</h3>
