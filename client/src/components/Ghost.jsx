@@ -255,7 +255,7 @@ const Ghost = () => {
           )}
         </div>
       </form>
-      <ChatSidebar className="sidebar" setChatFocused={setChatFocused}/>
+      <ChatSidebar className="sidebar" turnStatus={turnStatus} setChatFocused={setChatFocused}/>
     </div>
   );
 };
