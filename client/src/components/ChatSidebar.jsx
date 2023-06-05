@@ -4,12 +4,32 @@ const moment = require('moment');
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 
-const ChatSidebar = ({setChatFocused}) => {
+const importantUpdate = [
+  'invalid',
+  'user challenge failed',
+  'user out of time',
+  'complete',
+  'user lost',
+  'user challenge success'
+]
+const ChatSidebar = ({setChatFocused, turnStatus}) => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
 
+  /* * * * * * * * DELETE MESSAGES FOR NEW GAMES * * * * * * * */
+  useEffect(()=>{
+    async function startFresh(){
+      await axios.delete('api/messages/all');
+    }
+    startFresh();
+  }, []);
+  /* * * * * * * * SHOW OPPONENT THE GAME STATUS * * * * * * * * * */
+  useEffect(()=> {
+    if(importantUpdate.includes(turnStatus)){
+      getOpponentMessage();
+    }
+  }, [turnStatus])
   /* * * * * * * * * * * SERVER REQUESTS * * * * * * * * * * * * */
-  
   const handleSubmit = async (e) => {
     if(e) e.preventDefault();
     if (input.trim() !== '') {
@@ -34,12 +54,15 @@ const ChatSidebar = ({setChatFocused}) => {
     }
   }
 
-  useEffect(()=>{
-    async function startFresh(){
-      await axios.delete('api/messages/all');
+  async function getOpponentMessage(){
+    try{
+      await axios.post('api/messages/update', {update: turnStatus});
+      const {data} = await axios.get('api/messages');
+      setMessages(data);
+    } catch(err) {
+      console.warn(err);
     }
-    startFresh();
-  }, []);
+  }
 
   /* * * * * * * * * * * HELPER FUNCTIONS * * * * * * * * * * * * */
   const handleInputChange = (e) => {
