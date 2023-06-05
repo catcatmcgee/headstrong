@@ -20,7 +20,7 @@ Messages.post('/update', (req, res) => {
 Messages.post('/', (req, res) => {
   const { body: { text } } = req
   console.log(text);
-  return addMessage('You', new Date, text)
+  return addMessage('You', text)
     .then(() => res.status(201).send(null))
     .catch((err) => console.warn(err));
 });

@@ -76,10 +76,9 @@ const Message = sequelize.define('messages', {
 });
 Message.sync({alter: true});
 
-const addMessage = async(username, date, text) => {
+const addMessage = async(username, text) => {
   Message.create({
     username,
-    date,
     text
   })
   .then(() => {
