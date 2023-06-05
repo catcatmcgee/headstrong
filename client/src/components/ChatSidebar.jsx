@@ -35,8 +35,14 @@ const ChatSidebar = ({setChatFocused, turnStatus}) => {
     if (input.trim() !== '') {
       try {
         await axios.post('/api/messages', {text: input});
-        const {data} = await axios.get('api/messages');
-        setMessages(data);
+        setTimeout(()=> {
+          const getAllMessages = async ()=>{
+            const {data} = await axios.get('api/messages')
+            setMessages(data);
+          }
+          getAllMessages();
+        }, 0)
+        getOpponentMessage('Your opponent just posted this message: ' + input);
         setInput('');
       } catch(err) {
         console.warn(err); 
@@ -44,26 +50,33 @@ const ChatSidebar = ({setChatFocused, turnStatus}) => {
     }
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = async (message) => {
     try{
-      await axios.delete(`/api/messages/${id}`);
+      await axios.delete(`/api/messages/${message.id}`);
       const {data} = await axios.get('api/messages');
       setMessages(data);
+      getOpponentMessage('Your opponent just deleted this message: ' + message);
     } catch(err) {
       console.warn(err); 
     }
   }
 
-  async function getOpponentMessage(){
+  async function getOpponentMessage(message){
+    let update;
+    if(message){
+      update = message;
+    } else {
+      update = turnStatus;
+    }
     try{
-      await axios.post('api/messages/update', {update: turnStatus});
+      await axios.post('api/messages/update', {update: update});
       setTimeout(()=> {
         const getAllMessages = async ()=>{
           const {data} = await axios.get('api/messages')
           setMessages(data);
         }
         getAllMessages();
-      }, 200)
+      }, 500)
     } catch(err) {
       console.warn(err);
     }
@@ -76,8 +89,8 @@ const ChatSidebar = ({setChatFocused, turnStatus}) => {
 
   /* * * * * * * * * * * MESSAGE COMPONENT * * * * * * * * * * * * */
   const Message = ({message}) => {
-    const {text, id, username, createdAt} = message;
-    const date = moment("2023-06-04T22:48:07.000Z").format("HH:mm | DD/MM/YYYY");
+    const {text, username, createdAt} = message;
+    const date = moment(`${createdAt}`).format("HH:mm | DD/MM/YYYY");
     return (
       <div className="message-container">
         <div className="message-header">
@@ -85,7 +98,7 @@ const ChatSidebar = ({setChatFocused, turnStatus}) => {
           {message.username === 'You' ? (
             <div className="message-actions">
               <button><EditIcon style={{ fontSize: 12 }} /></button>
-              <button onClick={()=>handleDelete(id)}><DeleteIcon style={{ fontSize: 12 }} /></button>
+              <button onClick={()=>handleDelete(message)}><DeleteIcon style={{ fontSize: 12 }} /></button>
             </div>
           ) : null }
         </div>
