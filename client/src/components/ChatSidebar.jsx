@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 const moment = require('moment');
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 const ChatSidebar = ({setChatFocused}) => {
   const [messages, setMessages] = useState([]);
@@ -15,6 +17,7 @@ const ChatSidebar = ({setChatFocused}) => {
         await axios.post('/api/messages', {text: input});
         const {data} = await axios.get('api/messages');
         setMessages(data);
+        setInput('');
       } catch(err) {
         console.warn(err); 
       }
@@ -30,15 +33,14 @@ const ChatSidebar = ({setChatFocused}) => {
       console.warn(err); 
     }
   }
-  
+
   useEffect(()=>{
-    async function test(){
-      const {data} = await axios.get('api/messages');
-      console.log('messages?', data)
-      setMessages(data);
+    async function startFresh(){
+      await axios.delete('api/messages/all');
     }
-    test();
+    startFresh();
   }, []);
+
   /* * * * * * * * * * * HELPER FUNCTIONS * * * * * * * * * * * * */
   const handleInputChange = (e) => {
     setInput(e.target.value);
@@ -48,15 +50,14 @@ const ChatSidebar = ({setChatFocused}) => {
   const Message = ({message}) => {
     const {text, id, username, createdAt} = message;
     const date = moment("2023-06-04T22:48:07.000Z").format("HH:mm | DD/MM/YYYY");
-    console.log('text, username, createdAt', text, username, createdAt)
     return (
       <div className="message-container">
         <div className="message-header">
           <span className="message-userdate">{username} • {date}</span>
           {message.username === 'You' ? (
             <div className="message-actions">
-              <button>🖊️</button>
-              <button onClick={()=>handleDelete(id)}>🗑</button>
+              <button><EditIcon style={{ fontSize: 12 }} /></button>
+              <button onClick={()=>handleDelete(id)}><DeleteIcon style={{ fontSize: 12 }} /></button>
             </div>
           ) : null }
         </div>
