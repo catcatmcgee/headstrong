@@ -3,7 +3,7 @@ const Journals = Router();
 const { getAllJournals, addJournals, deleteJournal, updateJournal } = require('../db');
 
 Journals.get('/', (req, res) => {
-  console.log('cookie?', req.cookies)
+  // console.log('cookie?', req.cookies)
   return getAllJournals(req.cookies.Headstrong)
     .then((data) => res.json(data))
     .catch((err) => console.warn(err));
